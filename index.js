@@ -1,19 +1,26 @@
+const axios = require('axios');
+
 module.exports = async (req, res) => {
+  const TOKEN = process.env.TOKEN;
+  
   if (req.method === 'POST') {
     const { message } = req.body;
 
-    if (message && message.text) {
+    if (message && message.chat) {
       const chatId = message.chat.id;
-      const responseText = "أهلاً بك! البوت يعمل بنجاح على Vercel 🚀";
-
-      // إرسال رد بسيط للتأكد من الاتصال
-      return res.status(200).json({
-        method: "sendMessage",
-        chat_id: chatId,
-        text: responseText
-      });
+      
+      try {
+        // نستخدم مكتبة axios لإرسال الرسالة بشكل منفصل ومضمون
+        await axios.post(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+          chat_id: chatId,
+          text: "أهلاً بك! الآن البوت يتحدث معك من Vercel بنجاح 🚀"
+        });
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
     }
   }
 
-  res.status(200).send("Bot is running...");
+  // الرد على تيليجرام بأننا استلمنا البيانات بنجاح
+  res.status(200).send('OK');
 };
